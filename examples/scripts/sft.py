@@ -64,6 +64,7 @@ class ScriptArguments:
     save_total_limit: Optional[int] = field(default=10, metadata={"help": "Limits total number of checkpoints."})
     push_to_hub: Optional[bool] = field(default=False, metadata={"help": "Push the model to HF Hub"})
     hub_model_id: Optional[str] = field(default=None, metadata={"help": "The name of the model on HF Hub"})
+    perf_lora_config: Optional[str] = field(default="vilm/vietcuna-3b-qlora", metadata={"help": "link perf config"})
 
 
 parser = HfArgumentParser(ScriptArguments)
@@ -122,6 +123,9 @@ if script_args.use_peft:
     )
 else:
     peft_config = None
+
+peft_config = LoraConfig.from_pretrained(script_args.perf_lora_config)
+peft_config.inference_mode = False
 
 # Step 5: Define the Trainer
 trainer = SFTTrainer(
